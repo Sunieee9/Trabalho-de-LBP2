@@ -16,12 +16,11 @@ import java.util.List;
 public class LoginController {
 
     private final UsuariosRepository repository;
-//    private List<Usuario> usuarios = new ArrayList<>(Arrays.asList(new Usuario("TEste", "teste@teste.com", "teste")));
-
 
     public LoginController(UsuariosRepository repository){
         this.repository = repository;
     }
+
     @PostConstruct
     public void init() {
         var usuarioExistente = repository.findAllByEmailAndSenha("batata@example.org", "batata");
@@ -67,18 +66,17 @@ public class LoginController {
         List<Usuario> resultados = repository.findAllByEmailAndSenha(email, senha);
 
         if (!resultados.isEmpty()) {
-            var usuario = resultados.get(0);  // pega o primeiro usuário
+            var usuario = resultados.get(0);
 
             session.setAttribute("usuario", usuario.getNome());
             session.setAttribute("email", usuario.getEmail());
 
-            return "redirect:/home";
+            return "redirect:/index";
         }
 
         model.addAttribute("erro", "Email ou senha inválidos");
         return "login";
     }
-
 
     // Página de cadastro
     @GetMapping("/cadastro")
@@ -102,15 +100,37 @@ public class LoginController {
         return "login";
     }
 
-    // Página home (apenas para usuários logados)
-    @GetMapping("/home")
+    // Página home
+    @GetMapping("/index")
     public String homePage(HttpSession session, Model model) {
         String nome = (String) session.getAttribute("usuario");
-        if (nome == null) { // Se não tiver usuário na sessão
+        if (nome == null) {
             return "redirect:/login";
         }
         model.addAttribute("nome", nome);
-        return "home";
+        return "index";
+    }
+
+    //Registro de humor
+    @GetMapping("/registro")
+    public String registroPage(HttpSession session, Model model) {
+        String nome = (String) session.getAttribute("usuario");
+        if (nome == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("nome", nome);
+        return "registro";
+    }
+
+    //Calendário Mensal
+    @GetMapping("/calendario")
+    public String calendarioPage(HttpSession session, Model model) {
+        String nome = (String) session.getAttribute("usuario");
+        if (nome == null) {
+            return "redirect:/login";
+        }
+        model.addAttribute("nome", nome);
+        return "calendario"; // arquivo calendario.html
     }
 
     // Logout
@@ -122,7 +142,22 @@ public class LoginController {
 
     @GetMapping("/inicial")
     public String inicial() {
-        return "inicial"; // retorna o nome do template inicial.html em templates/
+        return "inicial";
+    }
+
+    @GetMapping("/home_manha")
+    public String homeManha() {
+        return "manha"; // arquivo: manha.html
+    }
+
+    @GetMapping("/home_tarde")
+    public String homeTarde() {
+        return "tarde"; // arquivo: tarde.html
+    }
+
+    @GetMapping("/home_noite")
+    public String homeNoite() {
+        return "noite"; // arquivo: noite.html
     }
 
 }
